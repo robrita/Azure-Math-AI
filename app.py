@@ -1,21 +1,25 @@
 import streamlit as st
-import json
+import os
+import app.pages
+import app.sidebar
+import app.describe
+import app.upload
 
 from openai import AzureOpenAI
-from app import sidebar
-from app import pages
-from app import upload
-from app import describe
+from dotenv import load_dotenv
 
-with open("config.json", "r") as f:
-    config = json.load(f)
+load_dotenv()
 
 # App title
-pages.show_home()
+question = app.pages.show_home()
 
-# app sidebar
-with st.sidebar:
-    sidebar.show_sidebar()
+# create a config dictionary
+config = {
+    "endpoint": os.environ["AZURE_OPENAI_ENDPOINT"],
+    "api_key": os.environ["AZURE_OPENAI_KEY"],
+    "api_version": os.environ["AZURE_OPENAI_API_VERSION"],
+    "model": os.environ["AZURE_OPENAI_CHAT_DEPLOYMENT"],
+}
 
 # Initialize OpenAI client with API key
 api_key = config["api_key"]
@@ -26,22 +30,17 @@ client = AzureOpenAI(
     api_key=api_key,
 )
 
-tabs = st.tabs(["Describe", "Upload"])
+# app sidebar
+with st.sidebar:
+    config["model"] = app.sidebar.show_sidebar(config)
 
-# Describe how the app should be built
-with tabs[0]:
-    describe.show_describe(config, api_key, client)
+st.subheader("Answer:")
+tab1, tab2 = st.tabs(["✍️Write", "📷Upload"])
 
-# Upload mock-up image of an app
-with tabs[1]:
-    upload.show_upload(config, api_key, client)
+# type the math formula on canvas
+with tab1:
+    app.describe.show_describe(config, api_key, client, question)
 
-st.divider()
-footer_html = """
-<div style='text-align: center;'>
-<p>Made with ❤️ by <a href="https://github.com/robrita/Azure-AI-App-Builder">RobRita</a>
-</p>
-</div>
-"""
-
-st.markdown(footer_html, unsafe_allow_html=True)
+# Upload a picture of a math formula
+with tab2:
+    app.upload.show_upload(config, api_key, client, question)

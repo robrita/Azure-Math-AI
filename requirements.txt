@@ -1,3 +1,6 @@
 streamlit
 openai
+load_dotenv
 streamlit-image-select
+streamlit_drawable_canvas
+svgwrite
