@@ -1,3 +1,7 @@
+<div align="center">
+<img src="https://raw.githubusercontent.com/robrita/Azure-Math-AI/main/img/math-ai.png" alt="icon"/>
+</div>
+
 # Azure Math AI
 POC designed for Math use cases using Azure AI platform
 
